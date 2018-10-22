@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>Totally Safe App</title>
     <link rel="stylesheets"  type = "text/css" href="stylesheets/FBStyle.css">
-    <style media="screen">
+   <style media="screen">
         #fb-btn {
             margin-left: auto;
             margin-right: auto;
@@ -84,9 +84,10 @@
             });
         }
         function testAPI() {
-            FB.api('/me?fields=name,email,birthday,location,age_range,gender,hometown', function (response) {
+            FB.api('/me?fields=name,email,birthday,location,age_range,gender,hometown,picture.width(150).height(150)', function (response) {
                 if (response && !response.error) {
                     console.log(response);
+                    getPic(response);
                     buildProfile(response);
                 }
                 FB.api('/me/feed', function (response) {
@@ -94,12 +95,14 @@
                         buildFeed(response);
                     }
                 });
-                FB.api('/me?fields=picture.width(150).height(150)', function (response){
+                
+        /*
+                FB.api('/me/albums', function(response){
                     if (response && !response.error) {
-                        getPic(response);
+                        //getAlbumPhotos(response);
                     }
                 })
-                getAlbumPhotos(response);
+        */
             })
         }
         function buildProfile(user) {
@@ -121,25 +124,22 @@
             
             document.getElementById('pic').innerHTML = '<img src="' + user.picture.data.url +'">'
         }
-        function getPhotos(user) {
-            document.getElementById('photos').innerHTML = '<img src="' + user.photos.data.id +'">'
-        }
-        function getAlbumPhotos (response){
-            let albumphotos = '<h3>Photos</h3>'
-            var albumArray[];
-            FB.api('/me?fields=albums.data.id)', function(response){
-                if (response && !response.error) {
-                    for(let i in album.data) {
-                        if (album.data[i].id)
-                           albumArray[i] = album.data[i].id
-                    }
-                    for(n = 0; n < albumArray.length; n++){
-                        FB.api(albumArray[n] + '/?fields.photos{link}', function(response))
-                        albumPhotos += '<img src="' + response.albumArray[n].photos.link + '"';
-                    }
+        function getAlbumPhotos (album){
+            let albumPhotos = '<h3>Photos</h3>'
+            var albumArray = []
+            var photoIDArray = []
+            console.log('code test stop 1')
+            // get album ID's
+            for (let i in album.data) {
+                if(album.data[i].id) {
+                    console.log('code test stop 2')
+                    albumArray[i] = album.data[i].id
                 }
             }
-            document.getElementById('photos')
+            // loop to call api to read info of album IDs
+            
+            
+            document.getElementById('photos').innerHTML = albumPhotos;
         }
         function buildFeed(feed) {
             let output = '<h3>Latest Posts</h3>';
@@ -170,7 +170,7 @@
                 document.getElementById('profile').style.display = 'none';
                 document.getElementById('feed').style.display = 'none';
                 document.getElementById('fb-btn').style.display = 'block';
-                document.getElementById('heading').style.display = 'block';
+                //document.getElementById('heading').style.display = 'block';
             }
         }
         function logout() {
@@ -179,13 +179,13 @@
             });
         }
     </script>
-<div id="headercontainer">
+
+    <div id="container">
+        <div id="headercontainer">
             <div id="header">
                 <h1>Totally Safe App</h1>
             </div>
         </div>
-    <div id="container">
-        
         <div id="content">
             <div id="loginlogout">
                 <fb:login-button id="fb-btn"
